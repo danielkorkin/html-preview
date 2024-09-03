@@ -43,7 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 			try {
 				const response = await fetch(
-					"https://your-nextjs-app-url/api/upload",
+					"https://html-preview-nine.vercel.app/api/upload",
 					{
 						method: "POST",
 						headers: {
@@ -56,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
 				if (response.ok) {
 					const data = await response.json();
 					vscode.window.showInformationMessage(
-						`HTML rendered at: https://your-nextjs-app-url/${data.uuid}/file`
+						`HTML rendered at: https://html-preview-nine.vercel.app/${data.uuid}/file`
 					);
 				} else {
 					vscode.window.showErrorMessage("Failed to upload files.");
