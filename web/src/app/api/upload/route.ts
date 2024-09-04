@@ -9,19 +9,16 @@ export async function POST(req: NextRequest) {
 	}
 
 	try {
-		// Check if the project exists
 		let project = await prisma.project.findUnique({
 			where: { id: projectId },
 		});
 
-		// If the project does not exist, create it
 		if (!project) {
 			project = await prisma.project.create({
-				data: { id: projectId },
+				data: { id: projectId, uuid: crypto.randomUUID() },
 			});
 		}
 
-		// Proceed to insert the files
 		await prisma.$transaction(
 			files.map((file: any) =>
 				prisma.codeFile.create({
@@ -35,7 +32,15 @@ export async function POST(req: NextRequest) {
 			)
 		);
 
-		return NextResponse.json({ success: true });
+		return NextResponse.json({
+			success: true,
+			projectUuid: project.uuid,
+			urls: files.map((file: any) => ({
+				file: file.name,
+				url: `/project/${project.uuid}/${file.name}`,
+				rawUrl: `/project/${project.uuid}/raw/${file.name}`,
+			})),
+		});
 	} catch (error) {
 		console.error(error);
 		return NextResponse.json(
@@ -43,8 +48,4 @@ export async function POST(req: NextRequest) {
 			{ status: 500 }
 		);
 	}
-}
-
-export function OPTIONS() {
-	return NextResponse.json({}, { status: 200 });
 }

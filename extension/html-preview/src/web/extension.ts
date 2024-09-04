@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Extension "render-html" is now active!');
 
+	// Update the command implementation
 	let disposable = vscode.commands.registerCommand(
 		"extension.renderHtml",
 		async () => {
@@ -56,7 +57,16 @@ export function activate(context: vscode.ExtensionContext) {
 				if (response.ok) {
 					const data = await response.json();
 					vscode.window.showInformationMessage(
-						`HTML rendered at: https://html-preview-nine.vercel.app/${data.uuid}/file`
+						`HTML rendered at: https://html-preview-nine.vercel.app/${data.projectUuid}/index.html`
+					);
+					console.log("URLs:", data.urls); // Log the returned URLs
+
+					data.urls.forEach(
+						(file: { file: string; rawUrl: string }) => {
+							vscode.window.showInformationMessage(
+								`Raw file available at: ${file.rawUrl}`
+							);
+						}
 					);
 				} else {
 					vscode.window.showErrorMessage("Failed to upload files.");
